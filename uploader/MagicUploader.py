@@ -22,23 +22,23 @@ class MagicUploader(FileSystemEventHandler,Uploader):
         FileSystemEventHandler.__init__(self)
 
     def on_created(self, event):
-        absoplute_path = self.get_absolute_path(event.src_path)
-        related_path = self.get_related_path(absoplute_path)
-        print("[Created] : %s " % absoplute_path)
+        absolute_path = self.get_absolute_path(event.src_path)
+        related_path = self.get_related_path(absolute_path)
+        print("[Created] : %s " % absolute_path)
         if not self.re_check(event.src_path):
-            print ("[CHECK] : Ignore file [%s]"%absoplute_path)
+            print ("[CHECK] : Ignore file [%s]"%absolute_path)
             return
         if event.is_directory:
             print ("CHECK: Directory Dont Upload")
             return
-        _thread.start_new_thread(self._upload,(absoplute_path, related_path))
+        _thread.start_new_thread(self._upload,(absolute_path, related_path))
 
     def on_deleted(self, event):
-        absoplute_path = self.get_absolute_path(event.src_path)
-        related_path = self.get_related_path(absoplute_path)
-        print("[Deleted] : %s" % absoplute_path)
-        if not self.re_check(absoplute_path):
-            print ("[CHECK] : Dont Upload")
+        absolute_path = self.get_absolute_path(event.src_path)
+        related_path = self.get_related_path(absolute_path)
+        print("[Deleted] : %s" % absolute_path)
+        if not self.re_check(absolute_path):
+            print ("[CHECK] : Ignore File [%s]"% absolute_path)
             return
         if event.is_directory:
             print ("[CHECK] : Directory Dont Upload")
