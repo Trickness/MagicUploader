@@ -3,24 +3,27 @@
     <meta charset="character_set">
     <title>WebUI Test</title>
     <script src="jquery-3.0.0.min.js"></script>
-    <script src="rpc.js"></script>
-    <script src="jquery.xmlrpc.js"></script>
+    <script src="xmlrpc_lib.js"></script>
     <script>
-      function cplt(xhr, textStatus){
-        alert(textStatus)
+      function rpc_callback(param){
+          window.console.debug(jQuery.parseJSON(param.val.me));
+          var ret_array = jQuery.parseJSON(param.val.me);
+          $("body").append("<ol>");
+          for(item in ret_array){
+            $("body").append("<li>" + ret_array[item].key + "</li>");
+            window.console.debug(item);
+          }
+          $("body").append("</ol>");
       }
     </script>
   </HEAD>
   <BODY>
     <script>
-      $.xmlrpc({
-        url : 'http://localhost:8080',
-        methodName : 'list_files',
-        params : [],
-        success: function(response, status, jqXHR) {alert ("Success") },
-        error: function(jqXHR, status, error) {alert("Failed")}
-      });
+      var client = new xmlrpc_client("http://localhost:8080");
+      var msg = new xmlrpcmsg('list_files',[]);
+      client.setDebug(2);
+      var resp = client.send(msg,10,rpc_callback);
     </script>
-    <p>Hello</p>
+    <p>FileList</p>
   </BODY>
 </HTML>
