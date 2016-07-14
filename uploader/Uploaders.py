@@ -11,6 +11,7 @@ from xmlrpc.client import ServerProxy
 from json import encoder, decoder
 import json
 
+
 class QiniuUploader:
     __is_initialized = False
     __access_key = ""
@@ -28,13 +29,13 @@ class QiniuUploader:
         self.__is_initialized = True
         return True
 
-    def upload(self, file_from: str, file_to: str):
+    def upload(self, file_from: str, file_to: str, process_callback):
         if not self.__is_initialized:
             print ("Have not been initialized!")
             return None
         print ("Qiniu Ready Upload [%s]"%file_from)
         token = self.__auth.upload_token(self.__bucket_name, file_to)
-        ret, info = put_file(token, file_to, file_from)
+        ret, info = put_file(token, file_to, file_from, progress_handler=process_callback)
         assert ret['key'] == file_to
         assert ret['hash'] == etag(file_from)
         return info
@@ -63,6 +64,8 @@ class Uploader:
     __uploaders = [QiniuUploader()]
     __do_upload = True
     __upload_hidden_file = False
+    __show_process = False
+    __process_callback = None
 
     def _init__(self):
         pass
@@ -71,11 +74,18 @@ class Uploader:
         if(self.__uploaders[self.TYPE_QINIU].set_auth(access_key,secret_key,bucket_name)):
             self.__type = self.TYPE_QINIU
 
-    def _set_do_upload(self,do_upload : bool):
+    def upload_process(self, uploaded_size: int, file_size: int):
+        print("%d of %d" % (uploaded_size, file_size))
+
+    def _set_do_upload(self, do_upload: bool):
         self.__do_upload = do_upload
 
     def _set_upload_hidden_file(self,upload_hidden_file : bool):
         self.__upload_hidden_file = upload_hidden_file
+
+    def _set_show_process(self, show_process : bool, process_callback = upload_process):
+        self.__show_process = show_process
+        self.__process_callback = process_callback
 
     def _upload(self, file_from : str, file_to : str):
         if not self.__do_upload:
@@ -94,8 +104,12 @@ class Uploader:
                 time.sleep(5)
                 continue
             break
+        process_handler = None
+        if self.__show_process:
+            if callable(self.__process_callback):
+                process_handler = self.__process_callback
         try:
-            info = self.__uploaders[self.__type].upload(file_from[2:],file_to)
+            info = self.__uploaders[self.__type].upload(file_from,file_to,process_handler)
         except IndexError as e:
             print ("You must initilize a uploader before use")
             return
@@ -116,7 +130,6 @@ class Uploader:
             var = self.__uploaders[self.__type].list_files()
         except IndexError as e:
             print ("You must initilize a uploader before use")
-        print (var)
         return  json.dumps(var)
 
     def _dispatch(self, method, params):

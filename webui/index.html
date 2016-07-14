@@ -4,13 +4,19 @@
     <title>WebUI Test</title>
     <script src="jquery-3.0.0.min.js"></script>
     <script src="xmlrpc_lib.js"></script>
+    <script src="config.js"></script>
     <script>
       function rpc_callback(param){
+          window.console.debug(param)
+          if (param.errno != 0){
+            alert ("Error : " + param.errstr);
+            return;
+          }
           window.console.debug(jQuery.parseJSON(param.val.me));
           var ret_array = jQuery.parseJSON(param.val.me);
           $("body").append("<ol>");
           for(item in ret_array){
-            $("body").append("<li>" + ret_array[item].key + "</li>");
+              $("body").append("<li><a href='" + generate_qiniu_link(ret_array[item].key) + "'>" + ret_array[item].key + "</a></li>");
             window.console.debug(item);
           }
           $("body").append("</ol>");
@@ -22,7 +28,11 @@
       var client = new xmlrpc_client("http://localhost:8080");
       var msg = new xmlrpcmsg('list_files',[]);
       client.setDebug(2);
-      var resp = client.send(msg,10,rpc_callback);
+      try {
+        var resp = client.send(msg,10,rpc_callback);
+      } catch (e) {
+        alert (e);
+      }
     </script>
     <p>FileList</p>
   </BODY>

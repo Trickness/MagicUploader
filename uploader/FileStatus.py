@@ -10,7 +10,7 @@ class FileStatus:
         self.file_path = os.path.abspath(file_path)
 
     def status(self):
-        open_fd_list = self.__get_all_fd()
+        open_fd_list = self.__get_all_fd
         open_count = len(open_fd_list)
         is_opened = False
         if open_count > 0:
@@ -22,6 +22,7 @@ class FileStatus:
         """获取当前所有进程"""
         return [ _i for _i in os.listdir('/proc') if _i.isdigit()]
 
+    @property
     def __get_all_fd(self):
         """获取所有已经打开该文件的fd路径"""
         all_fd = []
