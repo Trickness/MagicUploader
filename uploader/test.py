@@ -1,30 +1,21 @@
 # coding=utf8
 
-from qiniu import Auth, put_file, etag, urlsafe_base64_encode
-import qiniu.config
-from qiniu import BucketManager
-from qiniu.http import ResponseInfo
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
+from xmlrpc.server import SimpleXMLRPCDispatcher
 
+def list_files():
+    return "HEllo"
 
-access_key = ''
-secret_key = ''
+class RequestHandler(SimpleXMLRPCRequestHandler):
+#    rpc_paths = ('http://localhost/',)
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Headers",
+                         "Origin, X-Requested-With, Content-Type, Accept")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        SimpleXMLRPCRequestHandler.end_headers(self)
 
-q = Auth(access_key,secret_key)
-
-print (q)
-
-bucket = BucketManager(q)
-
-print (bucket)
-print (bucket.auth)
-
-bucket_name = 'resources'
-
-ret = bucket.list(bucket_name)
-
-print (ret[2].status_code)
-
-for item in ret[0]['items']:
-    assert isinstance(item, dict)
-    print (item)
-print (ret[2].text_body[0])
+server = SimpleXMLRPCServer(("", 8080),allow_none=True,requestHandler=RequestHandler)
+server.register_function(list_files)
+print ("RPC Started")
+server.serve_forever()

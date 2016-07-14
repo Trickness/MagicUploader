@@ -25,11 +25,11 @@
   </HEAD>
   <BODY>
     <script>
-      var client = new xmlrpc_client("http://localhost:8080");
+      var client = new xmlrpc_client(rpc_server);
       var msg = new xmlrpcmsg('list_files',[]);
       client.setDebug(2);
       try {
-        var resp = client.send(msg,10,rpc_callback);
+        var resp = client.send(msg,20,rpc_callback);
       } catch (e) {
         alert (e);
       }

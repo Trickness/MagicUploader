@@ -126,6 +126,7 @@ class Uploader:
 
 
     def list_files(self):
+        print ("Entry!")
         try:
             var = self.__uploaders[self.__type].list_files()
         except IndexError as e:
@@ -134,5 +135,3 @@ class Uploader:
 
     def _dispatch(self, method, params):
         return 'bad method'
-
-svr = ServerProxy("http://localhost:8080")
