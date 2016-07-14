@@ -7,7 +7,9 @@ from xmlrpc.server import SimpleXMLRPCServer
 from FileStatus import FileStatus
 import fcntl
 import time
-
+from xmlrpc.client import ServerProxy
+from json import encoder, decoder
+import json
 
 class QiniuUploader:
     __is_initialized = False
@@ -44,8 +46,15 @@ class QiniuUploader:
         ret, info = self.__bucket.delete(self.__bucket_name, file_name)
         return info
 
-    def list(self):
-        pass
+    def list_files(self) -> list:
+        ret = self.__bucket.list(self.__bucket_name)
+        if ret[2].status_code != 200:
+            return ret
+        return_var = []
+        for item in ret[0]['items']:
+            assert isinstance(item, dict)
+            return_var.append(item)
+        return return_var
 
 
 class Uploader:
@@ -94,7 +103,7 @@ class Uploader:
 
     def _remove(self, file_name : str):
         if not self.__do_upload:
-            print ("Dont remove")
+            print ("[Settings] : Dont remove")
             return
         try:
             self.__uploaders[self.__type].remove(file_name)
@@ -102,11 +111,15 @@ class Uploader:
             print("You must initilize a uploader before use")
 
 
-    def _list(self):
+    def list_files(self):
         try:
-            self.__uploaders[self.__type].list()
+            var = self.__uploaders[self.__type].list_files()
         except IndexError as e:
             print ("You must initilize a uploader before use")
+        print (var)
+        return  json.dumps(var)
 
     def _dispatch(self, method, params):
         return 'bad method'
+
+svr = ServerProxy("http://localhost:8080")

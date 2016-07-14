@@ -1,0 +1,26 @@
+<HTML>
+  <HEAD>
+    <meta charset="character_set">
+    <title>WebUI Test</title>
+    <script src="jquery-3.0.0.min.js"></script>
+    <script src="rpc.js"></script>
+    <script src="jquery.xmlrpc.js"></script>
+    <script>
+      function cplt(xhr, textStatus){
+        alert(textStatus)
+      }
+    </script>
+  </HEAD>
+  <BODY>
+    <script>
+      $.xmlrpc({
+        url : 'http://localhost:8080',
+        methodName : 'list_files',
+        params : [],
+        success: function(response, status, jqXHR) {alert ("Success") },
+        error: function(jqXHR, status, error) {alert("Failed")}
+      });
+    </script>
+    <p>Hello</p>
+  </BODY>
+</HTML>
