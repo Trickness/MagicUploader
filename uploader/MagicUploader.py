@@ -144,10 +144,11 @@ def start_watchdog(wg: MagicUploader):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
-        if (sys.argv[2] == "-d") or (sys.argv[2] == "--deamon"):
-            daemonize()
-    event_handler = MagicUploader()
+    abs_root_path = get_absolute_path(MagicUploaderConfig.root_path)
+    if len(sys.argv) == 2:
+        if (sys.argv[1] == "-d") or (sys.argv[1] == "--deamon"):
+            daemonize(stdout="/home/tricks/out.txt")
+    event_handler = MagicUploader(abs_root_path=abs_root_path)
     event_handler._set_do_upload(True)
     event_handler._set_show_process(True)
     event_handler._init_qiniu()

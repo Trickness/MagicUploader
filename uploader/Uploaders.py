@@ -10,6 +10,9 @@ import json
 from MUConfig import MagicUploaderConfig
 
 
+def upload_process(uploaded_size: int, file_size: int):
+    print("%d of %d" % (uploaded_size, file_size))
+
 class QiniuUploader:
     __is_initialized = False
     __access_key = ""
@@ -74,9 +77,6 @@ class Uploader:
                     secret_key=MagicUploaderConfig.Qiniu_secret_key):
         if (self.__uploaders[self.TYPE_QINIU].set_auth(access_key, secret_key, bucket_name)):
             self.__type = self.TYPE_QINIU
-
-    def upload_process(self, uploaded_size: int, file_size: int):
-        print("%d of %d" % (uploaded_size, file_size))
 
     def _set_do_upload(self, do_upload: bool):
         self.__do_upload = do_upload

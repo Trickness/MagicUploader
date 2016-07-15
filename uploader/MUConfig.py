@@ -8,4 +8,4 @@ class MagicUploaderConfig:
 
     dont_upload = [".*\.aria2$",".*__temp.*",".*__pycache__.*",".*tmp__.*"]
 
-    root_path = ""
+    root_path = "./"
