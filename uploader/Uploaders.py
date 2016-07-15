@@ -2,14 +2,12 @@
 
 from qiniu import Auth, put_file, etag, urlsafe_base64_encode
 from qiniu import BucketManager
-import qiniu.config
-from xmlrpc.server import SimpleXMLRPCServer
 from FileStatus import FileStatus
-import fcntl
 import time
 from xmlrpc.client import ServerProxy
 from json import encoder, decoder
 import json
+from MUConfig import MagicUploaderConfig
 
 
 class QiniuUploader:
@@ -17,10 +15,11 @@ class QiniuUploader:
     __access_key = ""
     __secret_key = ""
     __bucket_name = ""
+
     def __init__(self):
         pass
 
-    def set_auth(self, access_key : str, secret_key : str, bucket_name : str):
+    def set_auth(self, access_key: str, secret_key: str, bucket_name: str):
         self.__access_key = access_key
         self.__secret_key = secret_key
         self.__bucket_name = bucket_name
@@ -31,9 +30,9 @@ class QiniuUploader:
 
     def upload(self, file_from: str, file_to: str, process_callback):
         if not self.__is_initialized:
-            print ("Have not been initialized!")
+            print("Have not been initialized!")
             return None
-        print ("Qiniu Ready Upload [%s]"%file_from)
+        print("Qiniu Ready Upload [%s]" % file_from)
         token = self.__auth.upload_token(self.__bucket_name, file_to)
         ret, info = put_file(token, file_to, file_from, progress_handler=process_callback)
         assert ret['key'] == file_to
@@ -42,7 +41,7 @@ class QiniuUploader:
 
     def remove(self, file_name):
         if not self.__is_initialized:
-            print ("Have not been initialized!")
+            print("Have not been initialized!")
             return None
         ret, info = self.__bucket.delete(self.__bucket_name, file_name)
         return info
@@ -70,8 +69,10 @@ class Uploader:
     def _init__(self):
         pass
 
-    def _init_qiniu(self,bucket_name : str, access_key : str, secret_key : str):
-        if(self.__uploaders[self.TYPE_QINIU].set_auth(access_key,secret_key,bucket_name)):
+    def _init_qiniu(self, bucket_name=MagicUploaderConfig.Qiniu_bucket_name,
+                    access_key=MagicUploaderConfig.Qiniu_access_key,
+                    secret_key=MagicUploaderConfig.Qiniu_secret_key):
+        if (self.__uploaders[self.TYPE_QINIU].set_auth(access_key, secret_key, bucket_name)):
             self.__type = self.TYPE_QINIU
 
     def upload_process(self, uploaded_size: int, file_size: int):
@@ -80,14 +81,14 @@ class Uploader:
     def _set_do_upload(self, do_upload: bool):
         self.__do_upload = do_upload
 
-    def _set_upload_hidden_file(self,upload_hidden_file : bool):
+    def _set_upload_hidden_file(self, upload_hidden_file: bool):
         self.__upload_hidden_file = upload_hidden_file
 
-    def _set_show_process(self, show_process : bool, process_callback = upload_process):
+    def _set_show_process(self, show_process: bool, process_callback=upload_process):
         self.__show_process = show_process
         self.__process_callback = process_callback
 
-    def _upload(self, file_from : str, file_to : str):
+    def _upload(self, file_from: str, file_to: str):
         if not self.__do_upload:
             print("[Settings] : Dont upload")
             return
@@ -98,7 +99,7 @@ class Uploader:
             try:
                 fs = FileStatus(file_from)
             except OSError as e:
-                print ("OS Error file[%s]"%e.filename)
+                print("OS Error file[%s]" % e.filename)
                 return
             if fs.status()['is_opened']:
                 time.sleep(5)
@@ -109,29 +110,28 @@ class Uploader:
             if callable(self.__process_callback):
                 process_handler = self.__process_callback
         try:
-            info = self.__uploaders[self.__type].upload(file_from,file_to,process_handler)
+            info = self.__uploaders[self.__type].upload(file_from, file_to, process_handler)
         except IndexError as e:
-            print ("You must initilize a uploader before use")
+            print("You must initilize a uploader before use")
             return
-        print (info)
+        print(info)
 
-    def _remove(self, file_name : str):
+    def _remove(self, file_name: str):
         if not self.__do_upload:
-            print ("[Settings] : Dont remove")
+            print("[Settings] : Dont remove")
             return
         try:
             self.__uploaders[self.__type].remove(file_name)
         except IndexError as e:
             print("You must initilize a uploader before use")
 
-
     def list_files(self):
-        print ("Entry!")
+        print("Entry!")
         try:
             var = self.__uploaders[self.__type].list_files()
         except IndexError as e:
-            print ("You must initilize a uploader before use")
-        return  json.dumps(var)
+            print("You must initilize a uploader before use")
+        return json.dumps(var)
 
     def _dispatch(self, method, params):
         return 'bad method'
