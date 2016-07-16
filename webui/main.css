@@ -1,3 +1,16 @@
 .bangumi_item {
     background-color : azure;
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+div.bangumi_episodes {
+    padding-left: 25px;
+}
+
+.episode_item {
+    padding-left    : 5px;
+    padding-right   : 5px;
+    width:          : 100%;
 }

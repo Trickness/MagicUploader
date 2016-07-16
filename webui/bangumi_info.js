@@ -1,9 +1,7 @@
 var bangumi_info = {
     is_normal_format  : function (filename) {
         "use strict";
-        window.console.log(filename);
         var re = /.+?\[/g;
-        window.console.log(re.test(filename));
         return re.test(filename);
     },
     get_content : function (str) {
@@ -16,7 +14,7 @@ var bangumi_info = {
             ret = {
                 publisher_name  : "",
                 bangumi_name    : "",
-                episodes        : 0,
+                episode         : 0,
                 is_end          : false,
                 is_bd           : false,
                 resolution      : "1280x720",    // 720P
@@ -49,9 +47,8 @@ var bangumi_info = {
             return;
         }
         
-        window.console.log(var_array);
         ret.bangumi_name    = this.get_content(var_array[1]).replace(/_/g, ' ');
-        ret.episodes        = this.get_content(var_array[2]);
+        ret.episode        = this.get_content(var_array[2]);
         
         for (i = 3; i < var_array.length; i += 1) {
             temp_var = this.get_content(var_array[i]).toLocaleUpperCase();
@@ -95,7 +92,6 @@ var bangumi_info = {
         ret_var.upload_time = info.putTime;
         ret_var.file_size   = info.fsize;
         
-        window.console.log(ret_var);
         return ret_var;
     }
 };

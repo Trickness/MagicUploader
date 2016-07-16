@@ -9,13 +9,14 @@
         <script type="text/javascript" language="javascript" src="bangumi_info.js"      charset="UTF-8"></script> 
         <script type="text/javascript" language="javascript" src="main.js"              charset="UTF-8"></script> 
         <link   rel="stylesheet" type="text/css" href="main.css" />
+        <script>
+            bangumi_onclick = function (item) {
+                window.console.log(item);
+            }
+        </script>
     </HEAD>
     <BODY onload="main()">
         <p id='loading_text'>Loading......<span id='loading_signal'>-</span></p>
         <div id='bangumi_list'></div>
     </BODY>
-    <script>
-        window.console.log(document.getElementById("bangumi_list"));
-        window.console.log(document.getElementById("bangumi_li"));
-    </script>
 </HTML>
