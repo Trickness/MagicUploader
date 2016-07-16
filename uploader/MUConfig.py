@@ -6,6 +6,6 @@ class MagicUploaderConfig:
     Qiniu_secret_key = "Qkw1gSYBvxD2_I08dq4GIm0JQmUDaXfsLw-9gGu8"
     Qiniu_bucket_name= "resources"
 
-    dont_upload = [".*\.aria2$",".*__temp.*",".*__pycache__.*",".*tmp__.*"]
+    dont_upload = [".*\.aria2$",".*__temp.*",".*__pycache__.*",".*tmp__.*", ".*\.torrent$"]
 
-    root_path = "./"
+    root_path = "/home/tricks/Downloads"

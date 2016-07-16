@@ -1,39 +1,21 @@
+<!DOCTYPE html>
 <HTML>
-  <HEAD>
-    <meta charset="character_set">
-    <title>WebUI Test</title>
-    <script src="jquery-3.0.0.min.js"></script>
-    <script src="xmlrpc_lib.js"></script>
-    <script src="config.js"></script>
+    <HEAD>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Bangumi(Ver:Alpha)</title>
+        <script type="text/javascript" language="javascript" src="jquery-3.0.0.min.js"  charset="UTF-8"></script>
+        <script type="text/javascript" language="javascript" src="xmlrpc_lib.js"        charset="UTF-8"></script> 
+        <script type="text/javascript" language="javascript" src="config.js"            charset="UTF-8"></script> 
+        <script type="text/javascript" language="javascript" src="bangumi_info.js"      charset="UTF-8"></script> 
+        <script type="text/javascript" language="javascript" src="main.js"              charset="UTF-8"></script> 
+        <link   rel="stylesheet" type="text/css" href="main.css" />
+    </HEAD>
+    <BODY onload="main()">
+        <p id='loading_text'>Loading......<span id='loading_signal'>-</span></p>
+        <div id='bangumi_list'></div>
+    </BODY>
     <script>
-      function rpc_callback(param){
-          window.console.debug(param)
-          if (param.errno != 0){
-            alert ("Error : " + param.errstr);
-            return;
-          }
-          window.console.debug(jQuery.parseJSON(param.val.me));
-          var ret_array = jQuery.parseJSON(param.val.me);
-          $("body").append("<ol>");
-          for(item in ret_array){
-              $("body").append("<li><a href='" + generate_qiniu_link(ret_array[item].key) + "'>" + ret_array[item].key + "</a></li>");
-            window.console.debug(item);
-          }
-          $("body").append("</ol>");
-      }
+        window.console.log(document.getElementById("bangumi_list"));
+        window.console.log(document.getElementById("bangumi_li"));
     </script>
-  </HEAD>
-  <BODY>
-    <script>
-      var client = new xmlrpc_client(rpc_server);
-      var msg = new xmlrpcmsg('list_files',[]);
-      client.setDebug(2);
-      try {
-        var resp = client.send(msg,20,rpc_callback);
-      } catch (e) {
-        alert (e);
-      }
-    </script>
-    <p>FileList</p>
-  </BODY>
 </HTML>
