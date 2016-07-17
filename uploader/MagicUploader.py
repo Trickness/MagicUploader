@@ -13,6 +13,7 @@ import _thread
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
+
 def get_absolute_path(file_path: str) -> str:
     return os.path.abspath(file_path)
 

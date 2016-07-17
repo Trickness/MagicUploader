@@ -73,7 +73,7 @@ class Uploader:
         pass
 
     def _init_qiniu(self, bucket_name=MagicUploaderConfig.Qiniu_bucket_name,
-                    access_key=MagicUploaderConfig.Qiniu_access_key,
+                    access_key= MagicUploaderConfig.Qiniu_access_key,
                     secret_key=MagicUploaderConfig.Qiniu_secret_key):
         if (self.__uploaders[self.TYPE_QINIU].set_auth(access_key, secret_key, bucket_name)):
             self.__type = self.TYPE_QINIU
