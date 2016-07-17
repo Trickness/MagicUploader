@@ -4,14 +4,68 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta http-equiv="X-UA-Compatible" value="IE=9">
 		<link rel="stylesheet" href="plugin/ABPlayerHTML5/build/css/base.css" />
-		<title>New Interface Test for ABPlayer</title>
+		<title>Bangumi Player!!!</title>
         <script src="js/jquery-3.0.0.min.js"></script>
+        <script src="plugin/jquery.base64.js"></script>
         <script src="js/config.js"></script>
 		<script src="plugin/ABPlayerHTML5/build/js/ABPMobile.js"></script>
 		<script src="plugin/ABPlayerHTML5/build/js/CommentCoreLibrary.min.js"></script>
 		<script src="plugin/ABPlayerHTML5/build/js/ABPLibxml.js"></script>
 		<script src="plugin/ABPlayerHTML5/build/js/ABPlayer.js"></script>
 		<script type="text/javascript">
+            window.current_bangumi_info = {
+                name : "",
+                type : 99,      // 1 - TV动画
+                                // 2 - TV动画特别放送
+                                // 3 - OVA
+                                // 4 - 剧场版
+                                // 5 - 音乐视频（MV）
+                                // 6 - 网络放送
+                                // 7 - 其他分类
+                                // 10 - 三次元电影
+                                // 20 - 三次元电视剧或国产动画
+                                // 99- 未知（尚未分类）
+                episode : 0,
+                episode_id : 0,
+                episode_title : "",
+                video_url : ""
+            }
+            window.http_request = new XMLHttpRequest();
+            var get_danmaku_callback = function (param) {
+                if (param.currentTarget.readyState === 4 && param.currentTarget.status === 200) {
+                    window.console.log(param);
+                    (new CommentLoader(window.abpinst.cmManager)).setParser(BilibiliParser)._data = DandanplayParser( jQuery.parseJSON(param.currentTarget.responseText));
+                }
+            }
+            var search_danmaku_callback = function (param) {
+                if (param.currentTarget.readyState === 4 && param.currentTarget.status === 200) {
+                    var i = 0;
+                    window.console.log(param.currentTarget.responseText);
+                    response = jQuery.parseJSON(param.currentTarget.responseText);
+                    window.console.log(response);
+                    for (i in response.Animes) {
+                        if (response.Animes.hasOwnProperty(i)) {
+                            window.current_bangumi_info.name = response.Animes[i].Title;
+                            window.current_bangumi_info.episode_id = response.Animes[i].Episodes[0].Id;
+                            window.current_bangumi_info.episode_title = response.Animes[i].Episodes[0].Title;
+                            window.current_bangumi_info.type = response.Animes[i].Type;
+                        }
+                    }
+                    var url = "http://acplay.net/api/v1/comment/" + window.current_bangumi_info.episode_id + "?from=0";
+                    window.console.log(url);
+                    window.http_request.onreadystatechange = get_danmaku_callback;
+                    window.http_request.open("GET", url);
+                    //window.http_request.send();BilibiliParser
+                    //(new CommentLoader(window.abpinst.cmManager)).setParser(BilibiliParser).load('GET', "test.xml");
+                    (new CommentLoader(window.abpinst.cmManager)).setParser(DandanplayParser).load_patched('GET', url);
+                    //(new CommentLoader(window.abpinst.cmManager)).setParser(BilibiliParser).load('GET', "test.xml");
+                }
+            }
+            var danmaku_search = function (bangumi_name, bangumi_episode) {
+                window.http_request.onreadystatechange = search_danmaku_callback;
+                window.http_request.open("GET", "http://acplay.net/api/v1/searchall/ + "  + encodeURIComponent(bangumi_name) + "/" + bangumi_episode);
+                window.http_request.send();
+            }
 			window.addEventListener("load",function(){
 				var inst = ABP.bind(document.getElementById("player1"), isMobile());
 				CommentLoader("comment.xml", inst.cmManager);
@@ -23,10 +77,16 @@
 					}
 				});
 				window.abpinst = inst;
-                var src = document.createElement("source");
-                src.setAttribute("src", getUrlParam("video-src"));
-                src.setAttribute("type", "video/mp4");
-                document.getElementById("abp-video").appendChild(src);
+                window.current_bangumi_info.video_url = getUrlParam("video-src");
+                if (window.current_bangumi_info.video_url) {
+                    var src = document.createElement("source");
+                    src.setAttribute("src", window.current_bangumi_info.video_url);
+                    src.setAttribute("type", "video/mp4");
+                    document.getElementById("abp-video").appendChild(src);
+                }
+                window.current_bangumi_info.name = getUrlParam("bangumi_name");
+                window.current_bangumi_info.episode = parseInt(getUrlParam("bangumi_episode"));
+                danmaku_search (window.current_bangumi_info.name, window.current_bangumi_info.episode);
 			});
 		</script>
 	</head>
@@ -35,14 +95,6 @@
 			<div class="ABP-Video">
 				<div class="ABP-Container"></div>
 				<video id="abp-video" autobuffer="false" data-setup="{}">
-					<!-- // END VIDEO 1-->
-					<!-- START VIDEO 2
-					<source src="http://media.w3.org/2010/05/sintel/trailer.mp4" type="video/mp4">
-					// END VIDEO 2-->
-					<!-- START VIDEO 3
-					<source src="http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" type="video/mp4">
-					<source src="http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" type="video/webm">
-					// END VIDEO 3-->
 					<p>Your browser does not support html5 video!</p>
 				</video>
 				

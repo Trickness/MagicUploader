@@ -81,7 +81,7 @@ var on_bangumi_item_clicked = function (node) {
             if (window.bangumis_list[item].bangumi_name === node.childNodes[0].innerHTML) {
                 for (i in window.bangumis_list[item].bangumi_episodes) {
                     if (window.bangumis_list[item].bangumi_episodes.hasOwnProperty(i)) {
-                        href = window.location.protocol + "//" + window.location.host + window.player_path + "?video-src=" + window.bangumis_list[item].bangumi_episodes[i].url;
+                        href = window.location.protocol + "//" + window.location.host + window.player_path + "?video-src=" + window.bangumis_list[item].bangumi_episodes[i].url + "&bangumi_name=" + encodeURIComponent(window.bangumis_list[item].bangumi_name) + "&bangumi_episode=" + i;
                         new_node = document.createElement("a");
                         new_node.className = "episode_item";
                         new_node.setAttribute("href", href);
