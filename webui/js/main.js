@@ -2,6 +2,7 @@
 // xmlrpc_lib.js including requeired
 // config.js including required
 // sub_group.js including requeire
+// jquery.base64.js including required
 
 var loading_signal = {
     is_stop : true,
@@ -69,7 +70,8 @@ var on_bangumi_item_clicked = function (node) {
         i = 0,
         item = 0,
         html_episodes = "",
-        new_node = {};
+        new_node = {},
+        href;
     if (p.childNodes.length > 0) {     // collapse
         while (p.childNodes.length) {
             p.removeChild(p.childNodes[0]);
@@ -79,9 +81,10 @@ var on_bangumi_item_clicked = function (node) {
             if (window.bangumis_list[item].bangumi_name === node.childNodes[0].innerHTML) {
                 for (i in window.bangumis_list[item].bangumi_episodes) {
                     if (window.bangumis_list[item].bangumi_episodes.hasOwnProperty(i)) {
+                        href = window.location.protocol + "//" + window.location.host + window.player_path + "?video-src=" + window.bangumis_list[item].bangumi_episodes[i].url;
                         new_node = document.createElement("a");
                         new_node.className = "episode_item";
-                        new_node.setAttribute("href", window.bangumis_list[item].bangumi_episodes[i].url);
+                        new_node.setAttribute("href", href);
                         new_node.innerHTML = "[" + window.bangumis_list[item].bangumi_episodes[i].episode + "]";
                         p.appendChild(new_node);
                     }
@@ -143,13 +146,7 @@ var rpc_get_file_list_callback = function (param) {
     window.bangumis_list = generate_bangumi_list(bangumi_array);
     for (item = 0; item < window.bangumis_list.length; item += 1) {
         html_episodes = "<div onclick=on_bangumi_item_clicked(this)><li>" + window.bangumis_list[item].bangumi_name + "</li>";
-        html_episodes += "<div class='bangumi_episodes'>";
-        //for (i in window.bangumis_list[item].bangumi_episodes) {
-        //    if (window.bangumis_list[item].bangumi_episodes.hasOwnProperty(i)) {
-        //        html_episodes += "<a class='episode_item' href='" + window.bangumis_list[item].bangumi_episodes[i].url + "'>[" + window.bangumis_list[item].bangumi_episodes[i].episode + "]</a>";
-        //    }
-        //}
-        html_episodes += "</div></div>";
+        html_episodes += "<div class='bangumi_episodes'></div></div>";
         window.$("#bangumi_list").append(html_episodes);
     }
 };
