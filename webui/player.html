@@ -28,15 +28,10 @@
                 episode : 0,
                 episode_id : 0,
                 episode_title : "",
-                video_url : ""
+                video_url : "",
+                info : {}   // bangumi_info
             }
             window.http_request = new XMLHttpRequest();
-            var get_danmaku_callback = function (param) {
-                if (param.currentTarget.readyState === 4 && param.currentTarget.status === 200) {
-                    window.console.log(param);
-                    (new CommentLoader(window.abpinst.cmManager)).setParser(BilibiliParser)._data = DandanplayParser( jQuery.parseJSON(param.currentTarget.responseText));
-                }
-            }
             var search_danmaku_callback = function (param) {
                 if (param.currentTarget.readyState === 4 && param.currentTarget.status === 200) {
                     var i = 0;
@@ -68,7 +63,6 @@
             }
 			window.addEventListener("load",function(){
 				var inst = ABP.bind(document.getElementById("player1"), isMobile());
-				CommentLoader("comment.xml", inst.cmManager);
 				inst.txtText.focus();
 				inst.txtText.addEventListener("keydown", function(e){
 					if(e && e.keyCode === 13){

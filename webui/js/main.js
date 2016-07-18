@@ -3,6 +3,7 @@
 // config.js including required
 // sub_group.js including requeire
 // jquery.base64.js including required
+// ABPlayerHTML5 including required
 
 var loading_signal = {
     is_stop : true,
@@ -64,29 +65,67 @@ var loading_signal = {
     }
 };
 
+var on_bangumi_episode_item_clicked = function (node, episode) {
+    "use strict";
+    var item = 0,
+        i = 0,
+        DOM_bangumi_list = document.getElementById("bangumi_list"),
+        bangumi_name = "",
+        current_bangumi = {},
+        inst,
+        src;
+        
+    bangumi_name = node.parentNode.previousSibling.innerHTML;
+    for (item = 0; item < window.bangumis_list.length; item += 1) {
+        if (window.bangumis_list[item].bangumi_name === bangumi_name) {
+            current_bangumi = window.bangumis_list[item];
+        }
+    }
+    window.$(node.parentNode.parentNode).append("<div id='player:" + bangumi_name + "' class='ABP-Unit' style='width:640px;height:480px;' tabindex='1'><div class='ABP-Video'><div class='ABP-Container'></div><video id='abp-video' autobuffer='false' data-setup='{}'><p>Your browser does not support html5 video!</p></video></div><div class='ABP-Text'><input type='text'></div><div class='ABP-Control'><div class='button ABP-Play'></div><div class='progress-bar'><div class='bar dark'></div><div class='bar'></div></div><div class='button ABP-CommentShow'></div><div class='button ABP-FullScreen'></div></div></div>");
+    window.current_bangumi_info.info = current_bangumi.bangumi_episodes[episode];
+    inst = window.ABP.bind(document.getElementById("player:" + bangumi_name), window.isMobile());
+//    inst.txtText.focus();
+    inst.txtText.addEventListener("keydown", function (e) {
+        if (e && e.keyCode === 13) {
+            if (/^!/.test(this.value)) { return; } //Leave the internal commands
+            inst.txtText.value = "";
+        }
+    });
+    window.abpinst = inst;
+    window.current_bangumi_info.bangumi_name = window.current_bangumi_info.info.bangumi_name;
+    window.current_bangumi_info.episode = episode;
+    window.current_bangumi_info.video_url = window.current_bangumi_info.info.url;
+    if (window.current_bangumi_info.video_url) {
+        src = document.createElement("source");
+        src.setAttribute("src", window.current_bangumi_info.video_url);
+        src.setAttribute("type", "video/mp4");
+        document.getElementById("player:" + bangumi_name).childNodes[0].childNodes[1].appendChild(src);
+    }
+    window.console.log(window.current_bangumi_info);
+    window.danmaku_search(window.current_bangumi_info.bangumi_name, window.current_bangumi_info.episode);
+};
+
 var on_bangumi_item_clicked = function (node) {
     "use strict";
-    var p = node.childNodes[1],
+    var p = node.nextSibling,
         i = 0,
         item = 0,
         html_episodes = "",
         new_node = {},
         href;
     if (p.childNodes.length > 0) {     // collapse
+        if (node.parentNode.childNodes[2]) {
+            node.parentNode.removeChild(node.parentNode.childNodes[2]);
+        }
         while (p.childNodes.length) {
             p.removeChild(p.childNodes[0]);
         }
     } else {
         for (item = 0; item < window.bangumis_list.length; item += 1) {
-            if (window.bangumis_list[item].bangumi_name === node.childNodes[0].innerHTML) {
+            if (window.bangumis_list[item].bangumi_name === node.innerHTML) {
                 for (i in window.bangumis_list[item].bangumi_episodes) {
                     if (window.bangumis_list[item].bangumi_episodes.hasOwnProperty(i)) {
-                        href = window.location.protocol + "//" + window.location.host + window.player_path + "?video-src=" + window.bangumis_list[item].bangumi_episodes[i].url + "&bangumi_name=" + encodeURIComponent(window.bangumis_list[item].bangumi_name) + "&bangumi_episode=" + i;
-                        new_node = document.createElement("a");
-                        new_node.className = "episode_item";
-                        new_node.setAttribute("href", href);
-                        new_node.innerHTML = "[" + window.bangumis_list[item].bangumi_episodes[i].episode + "]";
-                        p.appendChild(new_node);
+                        window.$(p).append("<a class='episode_item' onclick=on_bangumi_episode_item_clicked(this," + i + ")>[" + window.bangumis_list[item].bangumi_episodes[i].episode + "]</a>");
                     }
                 }
             }
@@ -145,7 +184,7 @@ var rpc_get_file_list_callback = function (param) {
     }
     window.bangumis_list = generate_bangumi_list(bangumi_array);
     for (item = 0; item < window.bangumis_list.length; item += 1) {
-        html_episodes = "<div onclick=on_bangumi_item_clicked(this)><li>" + window.bangumis_list[item].bangumi_name + "</li>";
+        html_episodes = "<div class='bangumi_item' id='" + window.bangumis_list[item].bangumi_name + "'><li onclick=on_bangumi_item_clicked(this) >" + window.bangumis_list[item].bangumi_name + "</li>";
         html_episodes += "<div class='bangumi_episodes'></div></div>";
         window.$("#bangumi_list").append(html_episodes);
     }
@@ -162,7 +201,6 @@ var rpc_get_file_list = function () {
     var client = new window.xmlrpc_client(window.rpc_server),
         msg = new window.xmlrpcmsg('list_files', []),
         resp = {};
-    //client.setDebug(2);
     try {
         resp = client.send(msg, 20, rpc_get_file_list_callback);
     } catch (e) {

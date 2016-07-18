@@ -14,7 +14,7 @@ var bangumi_info = {
             ret = {
                 publisher_name  : "",
                 bangumi_name    : "",
-                episode         : 0,
+                episode         : "0",
                 is_end          : false,
                 is_bd           : false,
                 resolution      : "1280x720",    // 720P
@@ -27,14 +27,11 @@ var bangumi_info = {
                     has_sub         : true,
                     sub_group_name  : "",
                     is_embeded      : true,
-                    language        : "Simplified Chinese",  // [Simplified Chinese] , [Traditional Chinese] , [English], [other(minxed)]
-                    sub_file        : {
-                        Simplified  : "",
-                        Traditional : "",
-                        English     : "",
-                        Mixed       : ""
-                    }
-                }
+                    language        : "Simplified Chinese"  // [Simplified Chinese] , [Traditional Chinese] , [English], [other(minxed)]
+                },
+                comments        : [
+                    
+                ]
             },
             var_array   = filename.match(re),
             i           = 0,
