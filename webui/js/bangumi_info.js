@@ -2,7 +2,11 @@ var bangumi_info = {
     is_normal_format  : function (filename) {
         "use strict";
         var re = /.+?\[/g;
-        return re.test(filename);
+        if (re.test(filename)) {
+            re = /.*\.mp4$/g;
+            return re.test(filename);
+        }
+        return false;
     },
     get_content : function (str) {
         "use strict";
@@ -41,7 +45,7 @@ var bangumi_info = {
         ret.subs.sub_group_name = ret.publisher_name;
         
         if (!this.is_normal_format(filename)) {
-            return;
+            return "resource";
         }
         
         ret.bangumi_name    = this.get_content(var_array[1]).replace(/_/g, ' ');
@@ -84,6 +88,9 @@ var bangumi_info = {
     generate_bangumi_item_Qiniu : function (info) {
         "use strict";
         var ret_var = this.anaylise_filename(info.key);
+        if (ret_var === "resource") {
+            return "resource";
+        }
         ret_var.file_hash   = info.hash;
         ret_var.file_type   = info.mimeType;
         ret_var.upload_time = info.putTime;

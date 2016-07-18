@@ -169,18 +169,26 @@ var rpc_get_file_list_callback = function (param) {
         bangumi_array = [],
         append_bangumi_item = "",
         temp_element = null,
-        html_episodes = null;
+        html_episodes = null,
+        tmp_var = null,
+        k = 0;
     window.bangumis_list = {};
     if (param.errno !== 0) {
         window.console.log(param);
         window.first_loading_signal.failed();
         return;
     }
+    k = 0;
     window.first_loading_signal.done();
     ret_obj = window.jQuery.parseJSON(param.val.me);
     for (i =  0; i < ret_obj.length; i += 1) {
-        bangumi_array[i] = window.bangumi_info.generate_bangumi_item_Qiniu(ret_obj[i]);
-        bangumi_array[i].url = window.generate_qiniu_link(ret_obj[i].key); // generate URL
+        tmp_var = window.bangumi_info.generate_bangumi_item_Qiniu(ret_obj[i]);
+        if (tmp_var !== "resource") {
+            bangumi_array[k] = tmp_var;
+            bangumi_array[k].url = window.generate_qiniu_link(ret_obj[i].key); // generate URL
+            k += 1;
+        }
+        
     }
     window.bangumis_list = generate_bangumi_list(bangumi_array);
     for (item = 0; item < window.bangumis_list.length; item += 1) {
