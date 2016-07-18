@@ -36,6 +36,8 @@ class QiniuUploader:
             print("Have not been initialized!")
             return None
         print("Qiniu Ready Upload [%s]" % file_from)
+        names = file_to.split("/")
+        file_to = names[len(names) - 1]
         token = self.__auth.upload_token(self.__bucket_name, file_to)
         ret, info = put_file(token, file_to, file_from, progress_handler=process_callback)
         assert ret['key'] == file_to

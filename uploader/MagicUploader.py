@@ -133,7 +133,7 @@ def start_xml_rpc(ip: str, port: int, instance: MagicUploader):
 
 def start_watchdog(wg: MagicUploader):
     observer = Observer()
-    observer.schedule(wg, os.path.abspath(MagicUploaderConfig.root_path), recursive=False)
+    observer.schedule(wg, os.path.abspath(MagicUploaderConfig.root_path), recursive=True)
     observer.start()
     try:
         while True:
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         if (sys.argv[1] == "-d") or (sys.argv[1] == "--deamon"):
             daemonize(stdout="/home/tricks/out.txt")
     event_handler = MagicUploader()
-    event_handler._set_do_upload(False)
+    event_handler._set_do_upload(True)
     event_handler._set_show_process(True)
     event_handler._init_qiniu()
     _thread.start_new_thread(start_xml_rpc,("",8080,event_handler))
