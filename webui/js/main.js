@@ -81,8 +81,14 @@ var on_bangumi_episode_item_clicked = function (node, episode) {
             current_bangumi = window.bangumis_list[item];
         }
     }
-    window.$(node.parentNode.parentNode).append("<div id='player:" + bangumi_name + "' class='ABP-Unit' style='width:640px;height:480px;' tabindex='1'><div class='ABP-Video'><div class='ABP-Container'></div><video id='abp-video' autobuffer='false' data-setup='{}'><p>Your browser does not support html5 video!</p></video></div><div class='ABP-Text'><input type='text'></div><div class='ABP-Control'><div class='button ABP-Play'></div><div class='progress-bar'><div class='bar dark'></div><div class='bar'></div></div><div class='button ABP-CommentShow'></div><div class='button ABP-FullScreen'></div></div></div>");
+
     window.current_bangumi_info.info = current_bangumi.bangumi_episodes[episode];
+
+    if((window.$(node.parentNode.parentNode)[0].childNodes).length == 3){
+        window.$(node.parentNode.parentNode)[0].childNodes[2].remove();
+    }
+    window.$(node.parentNode.parentNode).append("<div id='player:" + bangumi_name + "' class='ABP-Unit' style='width:640px;height:480px;' tabindex='1'><div class='ABP-Video'><div class='ABP-Container'></div><video id='abp-video' autobuffer='false' data-setup='{}'><p>Your browser does not support html5 video!</p></video></div><div class='ABP-Text'><input type='text'></div><div class='ABP-Control'><div class='button ABP-Play'></div><div class='progress-bar'><div class='bar dark'></div><div class='bar'></div></div><div class='button ABP-CommentShow'></div><div class='button ABP-FullScreen'></div></div></div>");
+
     inst = window.ABP.bind(document.getElementById("player:" + bangumi_name), window.isMobile());
 //    inst.txtText.focus();
     inst.txtText.addEventListener("keydown", function (e) {

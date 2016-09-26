@@ -41,6 +41,7 @@ var bangumi_info = {
             i           = 0,
             temp_var    = "";
         // publisher name
+        console.log(re.exec(filename));
         ret.publisher_name = this.get_content(re.exec(filename)[0]);
         ret.subs.sub_group_name = ret.publisher_name;
         
