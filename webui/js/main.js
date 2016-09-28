@@ -87,9 +87,13 @@ var on_bangumi_episode_item_clicked = function (node, episode) {
     if((window.$(node.parentNode.parentNode)[0].childNodes).length == 3){
         window.$(node.parentNode.parentNode)[0].childNodes[2].remove();
     }
-    window.$(node.parentNode.parentNode).append("<div id='player:" + bangumi_name + "' class='ABP-Unit' style='width:640px;height:480px;' tabindex='1'><div class='ABP-Video'><div class='ABP-Container'></div><video id='abp-video' autobuffer='false' data-setup='{}'><p>Your browser does not support html5 video!</p></video></div><div class='ABP-Text'><input type='text'></div><div class='ABP-Control'><div class='button ABP-Play'></div><div class='progress-bar'><div class='bar dark'></div><div class='bar'></div></div><div class='button ABP-CommentShow'></div><div class='button ABP-FullScreen'></div></div></div>");
+    if((window.current_bangumi_info.bangumi_name != "")){
+        window.$(node.parentNode.parentNode).append("You have launched a player, close it first to open another");
+        return null;
+    }
+    window.$(node.parentNode.parentNode).append("<div><div id='player" + "' class='ABP-Unit' style='width:640px;height:480px;float:left' tabindex='1'><div class='ABP-Video'><div class='ABP-Container'></div><video id='abp-video' autobuffer='false' data-setup='{}'><p>Your browser does not support html5 video!</p></video></div><div class='ABP-Text'><input type='text'></div><div class='ABP-Control'><div class='button ABP-Play'></div><div class='progress-bar'><div class='bar dark'></div><div class='bar'></div></div><div class='button ABP-CommentShow'></div><div class='button ABP-FullScreen'></div></div></div><div id='danmaku' style='height:480px;width:400px;float:left;overflow:auto;margin-left:20px'></div></div>");
 
-    inst = window.ABP.bind(document.getElementById("player:" + bangumi_name), window.isMobile());
+    inst = window.ABP.bind(document.getElementById("player"), window.isMobile());
 //    inst.txtText.focus();
     inst.txtText.addEventListener("keydown", function (e) {
         if (e && e.keyCode === 13) {
@@ -105,10 +109,10 @@ var on_bangumi_episode_item_clicked = function (node, episode) {
         src = document.createElement("source");
         src.setAttribute("src", window.current_bangumi_info.video_url);
         src.setAttribute("type", "video/mp4");
-        document.getElementById("player:" + bangumi_name).childNodes[0].childNodes[1].appendChild(src);
+        document.getElementById("player").childNodes[0].childNodes[1].appendChild(src);
     }
     window.console.log(window.current_bangumi_info);
-    window.danmaku_search(window.current_bangumi_info.bangumi_name, window.current_bangumi_info.episode);
+    window.danmaku_search(window.current_bangumi_info.bangumi_name, window.current_bangumi_info.episode,"DandanPlay");
 };
 
 var on_bangumi_item_clicked = function (node) {
@@ -126,6 +130,7 @@ var on_bangumi_item_clicked = function (node) {
         while (p.childNodes.length) {
             p.removeChild(p.childNodes[0]);
         }
+        window.current_bangumi_info.bangumi_name = "";
     } else {
         for (item = 0; item < window.bangumis_list.length; item += 1) {
             if (window.bangumis_list[item].bangumi_name === node.innerHTML) {
